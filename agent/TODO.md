@@ -632,3 +632,33 @@ Root cause + analysis logged 2026-10-05:
             first_paint PASS (frame at 0.23 s, clean quit), kitty PASS
             (reply detected → `CSI >13u` push, shift+enter hint,
             newlines, clean /quit), legacy PASS (no push, ctrl-j hint).
+- [ ] **PARKED (2026-10-15, user request — not started): sensitive-info
+      safeguards on the auto-commit/push path.** Context: repo is now
+      public on GitHub (history squashed via orphan branch; old branch
+      `master` kept local-only as backup). Hard rule 7 in AGENT.md covers
+      the "please" level; user wants a mechanical block. Brainstorm
+      (no code written):
+      - KEY SEAM: `gitstore::commit_all` shells out to the `git` CLI
+            (no `--no-verify`) → plain git hooks ALREADY fire on every
+            agent auto-commit, zero Rust changes.
+      - L1: `.git/hooks/pre-commit` scanner over the staged diff, shared
+            committed denylist file (single source of truth). Patterns
+            must be allowlist-aware (placeholder `llm.example.lan` is in
+            the repo — a blanket "any .lan" rule self-trips). On hit:
+            commit fails → harness self-heal path logs a `⚠` in the TUI,
+            file never enters history, agent continues (graceful).
+      - L2: `.git/hooks/pre-push` scanning the full `origin/...HEAD`
+            diff — the actual egress block; catches cp'd state files and
+            rewritten history.
+      - L3 (net, optional): GitHub secret-scanning push protection +
+            CI gitleaks on push.
+      - L4 (structural): secrets mounted read-only OUTSIDE /workspace +
+            /state; assert in run.sh that the state repo NEVER has a
+            remote.
+      - L5 (runbook): one-command public-history reset script (orphan →
+            commit → force-push, the move done 2026-10-15) + on-demand
+            full-history `gitleaks` sweep.
+      - Open design question: on L1 hit — hard-refuse (recommended,
+            graceful via warn) vs quarantine (move file to `.quarantine/`
+            + notify model; friendlier to a retrying model).
+      - User: park it; pick it up when asked.
