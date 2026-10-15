@@ -1,0 +1,46 @@
+[package]
+name = "harness"
+version = "0.1.0"
+edition = "2024"
+
+# CR_01/10: the user-facing binary is `little_helper`; the library crate
+# stays `harness` (internal + cross-language parity naming).
+[[bin]]
+name = "little_helper"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "process", "fs", "io-util", "io-std", "sync", "time", "signal"] }
+tokio-util = "0.7"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream", "json"] }
+hyper = { version = "1", features = ["full"] }
+http = "1"
+chrono = "0.4"
+futures-util = "0.3"
+bytes = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.9"
+thiserror = "2"
+anyhow = "1"
+scraper = "0.25"
+selectors = "0.30"
+trafilatura = "0.2"
+similar = "2"
+base64 = "0.22"
+regex = "1"
+# poll+fs: the synchronous kitty keyboard-protocol probe (src/tui.rs)
+# polls stdin with a 100 ms deadline — see `kitty_probe` for why it must
+# not use a throwaway tokio runtime.
+nix = { version = "0.30", features = ["process", "signal", "poll", "fs"] }
+glob = "0.3"
+urlencoding = "2"
+ratatui = "0.29"
+crossterm = { version = "0.28", features = ["event-stream"] }
+
+[profile.release]
+lto = true
+strip = true
+
+[dev-dependencies]
+wiremock = "0.6.5"

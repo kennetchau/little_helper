@@ -1,0 +1,12 @@
+/target
+
+/reference
+
+# local-only overrides for run.sh (BACKEND, MODEL, PG_PASSWORD, ...)
+run.local.env
+
+# harness edit-spill side files (see tools/files edit_file "spill" note)
+.harness/
+
+# python bytecode
+__pycache__/
