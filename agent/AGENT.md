@@ -30,6 +30,11 @@ Rust port of the Python harness in `reference/harness/`. The plan is
 6. **Before starting a phase: say which phase you are starting.**
    **After completing a phase: say which phase is done + test results.**
    Update `agent/TODO.md` at the same time.
+7. **The repo is public (GitHub) — never write environment-specific or
+   sensitive values into `agent/` files or any tracked file**: no real
+   backend hostnames or LAN IPs, no credentials/passwords, no personal
+   names/emails. Use placeholders (e.g. `llm.example.lan`) and put real
+   values only in gitignored files (`run.local.env`, `$HARNESS_STATE`).
 
 ## Current status (as of 2026-10-14)
 
